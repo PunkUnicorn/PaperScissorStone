@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@model PaperScissorStone1.Models.Home.HomeViewModel
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+
+<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 id="loginTitle">Login</h1>
+        <button class="btn" id="registerShowPanel" onclick="onclickSwapPanel(event)">First visit? Click to register</button>
+        <div id="loginPanel">
+            @using (Html.BeginForm("LoginRegister", "Home", FormMethod.Post))
+            {
+                @Html.CheckBox("IsLogin", true, new { id = "isLogin", @class = "hidden" } );
+                <p>Player name :</p> @Html.TextBox("Name", Model.Name, new { id = "loginName", onkeyup = "onkeyupLogin(event)" } )
+                <p>Password :</p> @Html.Password("Password", string.Empty, new { id = "loginP", onkeyup = "onkeyupLogin(event)" })
+                <br />
+                <input id="loginBtn" type="submit" value="Submit"/>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 id="registerTitle">Register</h1>
+        <button class="btn" id="loginShowPanel" onclick="onclickSwapPanel(event)">Or login?</button>
+        <div id="registerPanel">
+            @using (Html.BeginForm("LoginRegister", "Home", FormMethod.Post))
+            {
+                @Html.CheckBox("IsLogin", false, new { id = "isLogin", @class = "hidden" });
+                <p>Player name : </p>@Html.TextBox("Name", Model.Name, new { id="registerName", onkeyup = "onkeyupRegister(event)" } )
+                <p>Password : </p>@Html.Password("Password", string.Empty, new { id = "registerP1", onkeyup = "onkeyupRegister(event)" } )
+                <p>Confirm password : </p>@Html.Password("ConfirmPassword", string.Empty, new { id = "registerP2", onkeyup = "onkeyupRegister(event)" } )
+                <br />
+                <input id="registerBtn" type="submit" value="Submit" />
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    $(document).ready(function () {
+        $('#loginPanel').hide();
+        $('#registerShowPanel').hide();
+        $('#loginTitle').hide();
+
+        $('#loginBtn').prop('disabled', true);
+        $('#registerBtn').prop('disabled', true);
+    });
+
+    function toggler(divId) {
+        $("#" + divId).slideToggle();
+    }
+
+    function onclickSwapPanel(event) {
+        toggler('loginTitle');
+        toggler('registerTitle');
+        toggler('loginShowPanel');
+        toggler('registerShowPanel');
+        toggler('loginPanel');
+        toggler('registerPanel');        
+    }
+
+    function validateLogin() {
+        return ($('#loginName').val().length > 0
+            && $('#loginP').val().length > 0);
+    }
+
+    function validateRegister() {
+        var somethingEntered = ($('#registerName').val().length > 0
+            && $('#registerP1').val().length > 0);
+
+        var pwMatch = ($('#registerP1').val() == $('#registerP2').val());
+
+        return (somethingEntered && pwMatch);
+    }
+
+    function onkeyupLogin() {
+        $('#loginBtn').prop('disabled', !validateLogin());
+    }
+
+    function onkeyupRegister() {
+        console.log('onchangeRegister');
+        $('#registerBtn').prop('disabled', !validateRegister());
+    }
+
+</script>
+}

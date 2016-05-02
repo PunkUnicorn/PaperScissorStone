@@ -1,0 +1,6 @@
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.dll.config
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.dll
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.pdb
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.csprojResolveAssemblyReference.cache
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.dll
+c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.pdb
