@@ -86,3 +86,4 @@ C:\Users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperSciss
 C:\Users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStone1\bin\Microsoft.AspNet.SignalR.SystemWeb.dll
 C:\Users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStone1\bin\Microsoft.AspNet.SignalR.Core.xml
 C:\Users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStone1\bin\Microsoft.AspNet.SignalR.SystemWeb.xml
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStone1\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll

@@ -20,13 +20,6 @@ namespace PaperScissorStone1
             Clients.All.addPlayer(id, name);
         }
 
-        //public static void InactiveLogOff(object sender, InactivityLoggOffArgs e)
-        //{
-        //    // http://stackoverflow.com/questions/17395201/call-a-hub-method-from-a-controllers-action/17396729#17396729
-        //    var hubContext = GlobalHost.ConnectionManager.GetHubContext<LobbyHub>();
-        //    hubContext.Clients.All.removePlayer(e.Id);
-        //}
-
         public void RemovePlayer(int id)
         {
             DataContext.PotentiallyLoggOff(id, 5);

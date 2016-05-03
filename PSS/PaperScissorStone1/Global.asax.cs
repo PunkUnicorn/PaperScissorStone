@@ -13,6 +13,7 @@ namespace PaperScissorStone1
     {
         protected void Application_Start()
         {
+            MefConfig.Compose();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

@@ -35,6 +35,10 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -87,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+    <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -95,6 +100,10 @@
     <ProjectReference Include="..\PaperScissorStone1\PaperScissorStone1.csproj">
       <Project>{F33D3D95-D299-43E5-93E3-48BCF07A6500}</Project>
       <Name>PaperScissorStone1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PaperScissorStoneCore\PaperScissorStoneCore.csproj">
+      <Project>{8EC27ADD-7026-4FFC-866A-8CA0A6AFC941}</Project>
+      <Name>PaperScissorStoneCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,1 @@
+﻿Uses https://www.nuget.org/packages/Moq/ Moq 4.2.1510.2205 installed via NuGet

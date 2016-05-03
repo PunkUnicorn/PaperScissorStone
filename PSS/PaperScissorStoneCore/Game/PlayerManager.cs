@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
@@ -30,15 +31,7 @@ namespace PaperScissorStoneCore
         List<Player> LoggedOn { get; }
     }
        
-    ///// <summary>
-    ///// EventArgs sent with the inactivity log off
-    ///// </summary>
-    //public class InactivityLoggOffArgs : EventArgs
-    //{
-    //    public InactivityLoggOffArgs(int id) : base() { Id = id; }
-    //    public int Id { get; private set; }
-    //}
-
+    [Export(typeof(IPlayerManager))]
     public class PlayerManager : IPlayerManager, IDisposable
     {
         private static string ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;AttachDbFilename=|DataDirectory|\PSS001.mdf";
@@ -50,20 +43,13 @@ namespace PaperScissorStoneCore
             {
                 if (_single == null)
                 {
-                    _single = new PlayerManager(ConnectionString);
+                    _single = new PlayerManager();
                 }
                 return _single;
             }
         }
 
         private SqlConnection Connection { get; set; }
-
-        //public event EventHandler<InactivityLoggOffArgs> InactiveLogOff;
-        //protected virtual void OnInactiveLogOff(int id)
-        //{
-        //    if (InactiveLogOff != null)
-        //        InactiveLogOff(this, new InactivityLoggOffArgs(id));
-        //}
 
         private object PlayerLock = new object();
         /// <summary>
@@ -81,9 +67,9 @@ namespace PaperScissorStoneCore
 
         public List<Player> LoggedOn { get { lock (PlayerLock) return Players.ToList(); } }
 
-        public PlayerManager(string connectionString)
+        public PlayerManager()
         {
-            Connection = new SqlConnection(connectionString);
+            Connection = new SqlConnection(ConnectionString);
             Connection.Open();
 
             lock (PlayerLock)
