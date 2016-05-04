@@ -85,28 +85,72 @@ namespace PaperScissorStone1
             DataContext.UpdateActivity(id);
         }
 
-        public void StartRound(int gameId, int id)
+        private bool CheckConnections(IGame game, out List<string> connections)
         {
-            var game = ArenaManager.Get(gameId);
+            connections = new List<string>();
+
             var con1 = ConnectionMap.Get(game.LeftPlayerId);
             var con2 = ConnectionMap.Get(game.RightPlayerId);
 
             if (string.IsNullOrWhiteSpace(con1) || string.IsNullOrWhiteSpace(con2))
+                return false;
+
+            connections.Add(con1);
+            connections.Add(con2);
+
+            return true;
+        }
+
+        public void StartRound(int gameId, int id)
+        {
+            var game = ArenaManager.Get(gameId);
+
+            List<string> connections;
+            if (!CheckConnections(game, out connections))
                 return;
 
             // wait for both then send one, two, three
-            StartCountdown(new[] { con1, con2 }, gameId);
+            StartCountdown(connections, gameId);
 
             // then on third clients submit their throw
             // within a window collect both throws
             // send winner, update database
             // wait for start round to be pressed, goto 10
-
         }
 
-        public void SubmitThrow(int id, int throwType)
+        public void SubmitThrow(int gameId, int id, string throwType)
         {
+            var game = ArenaManager.Get(gameId);
 
+            List<string> connections;
+            if (!CheckConnections(game, out connections))
+                return;
+
+            game.AddThrow(id, throwType);
+
+            if (game.ThrowCount == 2)
+            {
+                string displayResult = string.Empty;
+                if (game.IsTurnFaulted)
+                {
+                    displayResult = "Fault";
+                }
+                else
+                {
+                    int winnerId = game.Winner.Value;
+                    if (winnerId == 0)
+                    {
+                        displayResult = "Draw";
+                    }
+                    else
+                    {
+                        var winner = DataContext.GetName(winnerId);
+                        displayResult = string.Format("{0} Wins", winner ?? "Nobody ");
+                    }
+                }
+                Clients.Clients(connections).roundResults(game.Winner.HasValue ? game.Winner.Value : 0, displayResult);
+                ArenaManager.NextRound(game.Id);
+            }
         }
     }
 }

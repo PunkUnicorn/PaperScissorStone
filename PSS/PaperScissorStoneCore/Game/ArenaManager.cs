@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System;
 
 namespace PaperScissorStone1
 {
@@ -9,6 +10,7 @@ namespace PaperScissorStone1
     {
         IGame NewGame(int challenger, int accepter);
         IGame Get(int gameId);
+        void NextRound(int gameId);
     }
 
     [Export(typeof(IArenaManager))]
@@ -41,5 +43,13 @@ namespace PaperScissorStone1
                 return Games.FirstOrDefault(f => f.Id == gameId);
         }
 
+        public void NextRound(int gameId)
+        {
+            lock (Lock)
+            {
+                var game = Games.FirstOrDefault(f => f.Id == gameId);
+                game.NextRound();
+            }
+        }
     }
 }

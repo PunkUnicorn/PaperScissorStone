@@ -27,7 +27,7 @@ namespace PaperScissorStone1.Controllers
                 return game.RightPlayerId;
 
             return game.LeftPlayerId;
-        } 
+        }
 
         // GET: Arena
         public ActionResult Index(int gameId, int id)

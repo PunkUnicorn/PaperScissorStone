@@ -2,10 +2,26 @@
 @{
     ViewBag.Title = "Arena";
 }
-@Model PaperScissorStone1.Models.ArenaViewModel
+@model PaperScissorStone1.Models.ArenaViewModel
+<style>
+    throw_option { }
+    selected_throw { color: green }
+</style>
 <h2>Arena</h2>
 <button id="start" class="btn animated rubberBand">Start</button>
-<h4 id="countDown"></h4>
+<br />
+<div class="container">
+    <button id="paper" class="btn animated rubberBand throw_option" onclick="onclickThrow('paper')">Paper</button>
+    <button id="scissor" class="btn animated rubberBand throw_option" onclick="onclickThrow('scissor')">Scissor</button>
+    <button id="stone" class="btn animated rubberBand throw_option" onclick="onclickThrow('stone')">Stone</button>
+</div>
+<br />
+<div>
+    <h4 btn animated tada" id="countdown"></h4>
+</div>
+<div>
+    <button id="quit" class="btn" onclick="onclickQuit()">Quit</button>
+</div>
 @section scripts {
 <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
 <script src="~/signalr/hubs"></script>
@@ -16,13 +32,26 @@
         arenaUpdate = $.connection.arenaHub;
 
         arenaUpdate.client.countDown = function (countIn) {
-            $('#countDown').text(countIn.toString());
+            if ($('#start').prop("disabled") === false)
+                countdownStarted();
+
+            $('#countdown').text(countIn.toString());
         };
 
         arenaUpdate.client.pleaseSubmitThrow = function(gameId) {
-            arenaUpdate.server.submitThrow(@Model.MyId, 1);
-        };
+            var myOption = $('.selected_throw');
 
+            var selectedThrow = '';
+            if (myOption.length == 1)
+                selectedThrow = myOption.text();
+
+            arenaUpdate.server.submitThrow(@Model.GameId, @Model.MyId, selectedThrow);
+        };
+        arenaUpdate.client.roundResults = function(winnerId, displayResult) {
+            $('#countdown').text(displayResult);
+            $('#start').text('Next');
+            newRound();
+        };
         $.connection.hub.start().done(function () {
             arenaUpdate.server.joined(@Model.GameId, @Model.MyId);
             // auto remove ourselves from the lobby
@@ -32,15 +61,29 @@
 
             $('#start').click(function () {
                 arenaUpdate.server.startRound(@Model.GameId, @Model.MyId);
+                countdownStarted();
             });
+            newRound();
         });
     });
 
-    function onclickStart(event) {
-
+    function countdownStarted() {
+        $('#countdown').text('');
+        $('#start').prop( "disabled", true );
+        $('.throw_option').prop( "disabled", false );
+        $('throw_option').removeClass('selected_throw');
     }
 
+    function newRound() {
+        $('#start').prop( "disabled", false );
+        $('.throw_option').prop( "disabled", true );
+        $('.throw_option').removeClass('selected_throw');
+    }
 
+    function onclickThrow(buttonId) {
+        $('.throw_option').removeClass('selected_throw');
+        $('#' + buttonId).addClass('selected_throw');
+    }
 </script>
 }
 

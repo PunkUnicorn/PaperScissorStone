@@ -25,13 +25,15 @@ namespace PaperScissorStoneCore
         bool IsDuplicateName(string name);
         void UpdateActivity(int id);
         List<IPlayer> LoggedOn { get; }
+        string GetName(int id);
     }
        
     [Export(typeof(IPlayerManager))]
     public class PlayerManager : IPlayerManager, IDisposable
     {
         private static string ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;AttachDbFilename=|DataDirectory|\PSS001.mdf";
-        private SqlConnection Connection { get; set; }
+        private Lazy<SqlConnection> LazyConnection = new Lazy<SqlConnection>(() => new SqlConnection(ConnectionString) );
+        private SqlConnection Connection { get { return LazyConnection.Value; } }
 
         private object PlayerLock = new object();
         /// <summary>
@@ -51,7 +53,7 @@ namespace PaperScissorStoneCore
 
         public PlayerManager()
         {
-            Connection = new SqlConnection(ConnectionString);
+            //Connection = new SqlConnection(ConnectionString);
             Connection.Open();
 
             lock (PlayerLock)
@@ -223,6 +225,18 @@ WHERE @name = Name AND @password = Password";
 
             lock (PlayerLock)
                 LoggingOff.Remove(id);
+        }
+
+        public string GetName(int id)
+        {
+            lock (PlayerLock)
+            {
+                var p = GetPlayer(Players, id);
+                if (p == null)
+                    return null;
+
+                return p.Name;
+            }
         }
     }
 }
