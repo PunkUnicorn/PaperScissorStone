@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
@@ -11,7 +9,11 @@ namespace PaperScissorStone1
 {
     public class MefConfig
     {
-        
+        /// <summary>
+        /// This is used for signalR composition
+        /// </summary>
+        internal static CompositionContainer Container { get; private set; }
+
         public static void Compose()
         {
             // Based on  // http://christianjvella.com/wordpress/mef-mvc-defining-controllerfactory/
@@ -26,11 +28,11 @@ namespace PaperScissorStone1
             var coreCatalog = new AssemblyCatalog(targetAssemblyFullName);
 
             var both = new AggregateCatalog(selfCatalog, coreCatalog);
+            Container = new CompositionContainer(both);
 
-            var composition = new CompositionContainer(both);
-            IControllerFactory mefControllerFactory = new MefControllerFactory(composition); //Get Factory to be used
-            ControllerBuilder.Current.SetControllerFactory(mefControllerFactory); //Set Factory to be used
-
+            Container.ComposeParts();
+            IControllerFactory mefControllerFactory = new MefControllerFactory(Container); 
+            ControllerBuilder.Current.SetControllerFactory(mefControllerFactory); 
         }
     }
 }

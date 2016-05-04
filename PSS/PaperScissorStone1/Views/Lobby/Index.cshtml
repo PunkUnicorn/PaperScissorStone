@@ -1,66 +1,85 @@
 ﻿@model PaperScissorStone1.Models.LobbyViewModel
-
 @{
     ViewBag.Title = "View";
 }
 
-<h2>Lobby</h2>
-<ul id="playerList">
-    @foreach (var p in Model.Players) {
-        if (p.Id != Model.Id) {
-            var htmlId = string.Format("Pl{0}", p.Id);
-            <li id="@htmlId">
-                @p.Name <button class="btn" onclick="onclickChallenge(@p.Id)">Challenge!</button> 
-            </li>
-        }
-    }
-</ul>
+<style>
+    challenge_button {} /* used to lock out challenge buttons */
+</style>
 
-<div id="challengers">
+<div class="row">
+    <div class="col-md-12">
+        <h2>Lobby</h2>
+        <ul id="playerList">
+            @foreach (var p in Model.Players)
+            {
+                if (p.Id != Model.Id)
+                {
+                    var htmlPlayerId = string.Format("Pl{0}", p.Id);
+                    var htmlIssueChallengeId = string.Format("Ic{0}", p.Id);
+                    <li id="@htmlPlayerId">
+                        @* there are two places this button is created (1 if 2) *@
+                        @p.Name <button id="@htmlIssueChallengeId" class="btn challenge_button" onclick="onclickChallenge(@p.Id)">Challenge!</button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
 
+    <div class="col-md-12">
+        <div id="challengers">
+
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <h2>Chat</h2>
+        <div class="container">
+            <input type="text" id="message" />
+            <br />
+            <input class="btn unstyled" type="button" id="sendmessage" value="Send" />
+            <ul id="discussion"></ul>
+        </div>
+    </div>
 </div>
-
-<h2>Chat</h2>
-<div class="container">
-    <input type="text" id="message" />
-    <input type="button" id="sendmessage" value="Send" />
-    <input type="hidden" id="displayname" />
-    <ul id="discussion"></ul>
-</div>
-
-@Scripts.Render("~/bundles/jquery")
 @section scripts {
     <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
     <script src="~/signalr/hubs"></script>
 
-    <!--SignalR script to update the chat page and send messages.-->
+    <!-- From the classic SignalR tutorial: chat page and send messages.-->
     <script>
         var lobbyUpdate = null;
-        
+
         $(document).ready(function () {
-            // Reference the auto-generated proxy for the hub.
             lobbyUpdate = $.connection.lobbyHub;
-            // Create a function that the hub can call back to display messages.
+
             lobbyUpdate.client.addPlayer = function (id, name) {
-                if (id !== @Model.Id)
+                if (id !== @Model.Id && $('#playerList > #'+ makeHtmlPlayerId(id)).length === 0)
                     $('#playerList').append(makeListItem(id, name));
             };
-            lobbyUpdate.client.removePlayer = function (id) { 
-                $('li#' + makeHtmlId(id)).remove();
+            lobbyUpdate.client.removePlayer = function (id) {
+                $('li#' + makeHtmlPlayerId(id)).remove();
             };
             lobbyUpdate.client.newMessage = function (name, message) {
-                // Add the message to the page.
                 $('#discussion').append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
             };
-            lobbyUpdate.client.startChallenge = function(challengeById, challengeByName) {
-                $('#challengers').append(makeChallengeAcceptBtn(challengeById, challengeByName));
+            lobbyUpdate.client.inviteChallenge = function(challengeById, challengeByName) {
+                console.log($('#' + makeHtmlIssueChallengeId(challengeById).length));
+                $('#' + makeHtmlIssueChallengeId(challengeById)).prop('disabled', true); //disable ability to challenge the challenger
+                var acceptBtn = makeChallengeAcceptBtn(challengeById, challengeByName);
+                $('#playerList > #'+makeHtmlPlayerId(challengeById)).append(acceptBtn);
+            };
+            lobbyUpdate.client.challengeCancelled = function(challengeById) {
+                $('#' + makeHtmlIssueChallengeId(challengeById)).prop('disabled', false); //re-eneable challenge
+                $('#'+makeHtmlPlayerId(challengeById)+' > #' + makeHtmlAcceptFromId(challengeById)).remove();
+            };
+            lobbyUpdate.client.challengeRejected = function(theirId) {
+                cancelledChallenge(theirId);
             };
             $.connection.hub.start().done(function () {
                 // add ourselves to the lobby
                 lobbyUpdate.server.addPlayer(@Model.Id, '@Model.Name');
-
-                // jQuery event hooking here?
 
                 // auto remove ourselves from the lobby
                 window.onbeforeunload = function (e) {
@@ -68,40 +87,61 @@
                 };
 
                 $('#sendmessage').click(function () {
-                    // Call the Send method on the hub.
                     lobbyUpdate.server.send('@Model.Name', $('#message').val());
-                    // Clear text box and reset focus for next comment.
                     $('#message').val('').focus();
                 });
             });
         });
 
-        // This optional function html-encodes messages for display in the page.
         function htmlEncode(value) {
             var encodedValue = $('<div />').text(value).html();
             return encodedValue;
         }
 
-        function makeHtmlId(id) {
+        function makeHtmlPlayerId(id) {
             return 'Pl' + id.toString();
         }
 
+        function makeHtmlAcceptFromId(id) {
+            return 'Cb' + id.toString();
+        }
+
+        function makeHtmlIssueChallengeId(id) {
+            return 'Ic' + id.toString();
+        }
+
         function makeChallengeAcceptBtn(challengeById, challengeByName) {
-            return '<button class="btn" onclick="onclickAcceptChallenge('+challengeById+')">Accept challenge by ' + challengeByName + '</button>';
+            return '<button id="'+ makeHtmlAcceptFromId(challengeById) +'" class="btn challenge_button animated rubberBand" onclick="onclickAcceptChallenge('+challengeById+')">Accept challenge by ' + challengeByName + '</button>';
         }
 
         function makeListItem(id, name) {
-            var htmlId = makeHtmlId(id);
-            var htmlLi = '<li id="' + htmlId + '">' + 
-                htmlEncode(name) + 
-                ' <button class="btn" onclick="onclickChallenge(' + id + ')">Challenge!</button>' +
+            var htmlPlayerId = makeHtmlPlayerId(id);
+            var htmlLi = '<li id="' + htmlPlayerId + '">' +
+                htmlEncode(name) +
+                /* there are two places this button is created (2 of 2) */
+                ' <button id="'+ makeHtmlIssueChallengeId(id) +'" class="btn challenge_button" onclick="onclickChallenge(' + id + ')">Challenge!</button>' +
                 '</li>';
 
             return htmlLi;
         }
 
+        function makeCancelChallengeButton(theirId) {
+            return '<button id="cancelChallenge" class="btn animated rubberBand" onclick="onclickCancelChallenge('+theirId+')">Cancel challenge</button>';
+        }
+
         function onclickChallenge(theirId) {
-            lobbyUpdate.server.startChallenge(@Model.Id, '@Model.Name', theirId);
+            lobbyUpdate.server.inviteChallenge(@Model.Id, '@Model.Name', theirId);
+            $('#challengers').append(makeCancelChallengeButton(theirId));
+            $('.challenge_button').prop('disabled', true); 
+        }
+
+        function cancelledChallenge(theirId) {
+            $('#' + makeHtmlIssueChallengeId(theirId)).prop('disabled', false); //re-enable ability to challenge the challenger
+            $('#cancelChallenge').remove();
+        }
+        function onclickCancelChallenge(theirId) {
+            lobbyUpdate.server.cancelChallenge(@Model.Id, '@Model.Name', theirId);
+            cancelledChallenge(theirId);
         }
 
         function onclickAcceptChallenge(challengeById) {

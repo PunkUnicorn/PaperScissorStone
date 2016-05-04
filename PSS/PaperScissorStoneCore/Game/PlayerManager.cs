@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace PaperScissorStoneCore
@@ -16,7 +12,7 @@ namespace PaperScissorStoneCore
         int? LogOn(string name, string password);
         void LogOff(int id);
         /// <summary>
-        /// Logs off if no further activity for a short time
+        /// Logs off if no further activity within a specified time
         /// </summary>
         /// <param name="id">Id of player to log off if idle</param>
         /// <param name="secondsWait">Seconds to wait for activity before logging off</param>
@@ -28,7 +24,7 @@ namespace PaperScissorStoneCore
         int? Register(string name, string password);
         bool IsDuplicateName(string name);
         void UpdateActivity(int id);
-        List<Player> LoggedOn { get; }
+        List<IPlayer> LoggedOn { get; }
     }
        
     [Export(typeof(IPlayerManager))]
@@ -36,18 +32,18 @@ namespace PaperScissorStoneCore
     {
         private static string ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;AttachDbFilename=|DataDirectory|\PSS001.mdf";
 
-        private static IPlayerManager _single = null;
-        public static IPlayerManager Single
-        {
-            get
-            {
-                if (_single == null)
-                {
-                    _single = new PlayerManager();
-                }
-                return _single;
-            }
-        }
+        //private static IPlayerManager _single = null;
+        //public static IPlayerManager Single
+        //{
+        //    get
+        //    {
+        //        if (_single == null)
+        //        {
+        //            _single = new PlayerManager();
+        //        }
+        //        return _single;
+        //    }
+        //}
 
         private SqlConnection Connection { get; set; }
 
@@ -65,7 +61,7 @@ namespace PaperScissorStoneCore
         /// </summary>
         private Dictionary<int, Timer> LoggingOff { get; set; }
 
-        public List<Player> LoggedOn { get { lock (PlayerLock) return Players.ToList(); } }
+        public List<IPlayer> LoggedOn { get { lock (PlayerLock) return Players.Cast<IPlayer>().ToList(); } }
 
         public PlayerManager()
         {
@@ -100,14 +96,13 @@ namespace PaperScissorStoneCore
 
                 while (reader.Read())
                 {
-                    retval.Add(new Player
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1)
-                    });
+                    var p = new Player(
+                        id: reader.GetInt32(0),
+                        name: reader.GetString(1));
+
+                    retval.Add(p);
                 }
             }
-
             return retval;
         }
 
@@ -117,7 +112,6 @@ namespace PaperScissorStoneCore
 OUTPUT INSERTED.Id
 VALUES(@name, @password)";
 
-            //DateTime activityTime = DateTime.Now;
             int? newId = null;
             using (var command = new SqlCommand(sql, Connection))
             {
@@ -164,10 +158,13 @@ WHERE @name = Name AND @password = Password";
         private static Player GetPlayer(List<Player> list, int id)
         {
             var found = list.Find(f => f.Id == id);
-            //if (found == null)
-            //    throw new InvalidOperationException("GetPlayer failed for unknown player id:" + id);
-
             return found;
+        }
+
+        private static void CleanTimer(Timer cleanMe)
+        {
+            cleanMe.Stop();
+            cleanMe.Dispose();
         }
 
         public void UpdateActivity(int id)
@@ -175,7 +172,10 @@ WHERE @name = Name AND @password = Password";
             lock (PlayerLock)
             {
                 if (LoggingOff.ContainsKey(id))
-                    LoggingOff[id].Stop();
+                {
+                    CleanTimer(LoggingOff[id]);
+                    LoggingOff.Remove(id);
+                }
 
                 var found = GetPlayer(Players, id);
                 if (found != null)
@@ -200,13 +200,12 @@ WHERE @name = Name AND @password = Password";
             {
                 lock (PlayerLock)
                 {
-                    Players.Add(new Player { Name = name, Id = id.Value });
+                    Players.Add(new Player(id.Value, name));
                     DuplicateNameCheck.Add(name.GetHashCode());
                 }
 
                 UpdateActivity(id.Value);
             }
-
             return id;
         }
 
@@ -225,10 +224,21 @@ WHERE @name = Name AND @password = Password";
                 var timer = new Timer()
                     { Interval = secondsWait * 1000, AutoReset = false, Enabled = false };
 
-                timer.Elapsed += (object sender, ElapsedEventArgs e) => LogOff(id);
+                timer.Elapsed += (object sender, ElapsedEventArgs e) => Timer_Elapsed((Timer)sender, id);
                 LoggingOff[id] = timer;
                 LoggingOff[id].Start();
             }
+        }
+
+        private void Timer_Elapsed(Timer sender, int id)
+        {
+            var me = (Timer)sender;
+
+            LogOff(id);
+            CleanTimer(LoggingOff[id]);
+
+            lock (PlayerLock)
+                LoggingOff.Remove(id);
         }
     }
 }

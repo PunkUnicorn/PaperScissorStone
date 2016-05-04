@@ -4,3 +4,9 @@ c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperSciss
 c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.csprojResolveAssemblyReference.cache
 c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.dll
 c:\users\cg1\documents\visual studio 2015\Projects\PaperScissorStone1\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.pdb
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.dll.config
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.dll
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\bin\Debug\PaperScissorStoneCore.pdb
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.csprojResolveAssemblyReference.cache
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.dll
+C:\Users\cg1\Documents\GitHub\PSS\PaperScissorStoneCore\obj\Debug\PaperScissorStoneCore.pdb

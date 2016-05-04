@@ -22,7 +22,7 @@ namespace PaperScissorStone1.Controllers
         }
 
         // GET: Lobby
-        public ActionResult Index(int? id, string name)
+        public ActionResult Index(int? id = null, string name = null)
         {
             if (!id.HasValue || string.IsNullOrWhiteSpace(name))
                 return RedirectToAction("Index", "Home");

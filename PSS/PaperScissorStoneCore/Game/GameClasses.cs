@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 
 namespace PaperScissorStoneCore
 {
-    public class Player
+    public interface IPlayer
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime LastActivityOn { get; set; }
+        int Id { get; }
+        string Name { get; }
+        DateTime LastActivityOn { get; }
+    }
+
+    public class Player : IPlayer
+    {
+        public Player(int id, string name) { Id = id;  Name = name; }
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+        public DateTime LastActivityOn { get; internal set; }
     }
 
     public class Game
