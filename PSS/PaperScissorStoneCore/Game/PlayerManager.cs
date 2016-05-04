@@ -31,20 +31,6 @@ namespace PaperScissorStoneCore
     public class PlayerManager : IPlayerManager, IDisposable
     {
         private static string ConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;AttachDbFilename=|DataDirectory|\PSS001.mdf";
-
-        //private static IPlayerManager _single = null;
-        //public static IPlayerManager Single
-        //{
-        //    get
-        //    {
-        //        if (_single == null)
-        //        {
-        //            _single = new PlayerManager();
-        //        }
-        //        return _single;
-        //    }
-        //}
-
         private SqlConnection Connection { get; set; }
 
         private object PlayerLock = new object();
@@ -232,10 +218,8 @@ WHERE @name = Name AND @password = Password";
 
         private void Timer_Elapsed(Timer sender, int id)
         {
-            var me = (Timer)sender;
-
             LogOff(id);
-            CleanTimer(LoggingOff[id]);
+            CleanTimer(sender);
 
             lock (PlayerLock)
                 LoggingOff.Remove(id);

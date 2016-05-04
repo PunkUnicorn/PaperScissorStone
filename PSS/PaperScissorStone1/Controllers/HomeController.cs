@@ -1,5 +1,4 @@
 ﻿using PaperScissorStone1.Models;
-using PaperScissorStone1.Models.Home;
 using PaperScissorStoneCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,8 @@ using System.Web.Mvc;
 
 namespace PaperScissorStone1.Controllers
 {
-    [Export] 
+    [Export]
+    [ExportMetadata("ControllerName", "Home")]
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class HomeController : Controller
     {

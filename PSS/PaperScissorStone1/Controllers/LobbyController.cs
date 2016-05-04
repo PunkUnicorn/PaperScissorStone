@@ -10,6 +10,7 @@ using System.Web.Mvc;
 namespace PaperScissorStone1.Controllers
 {
     [Export]
+    [ExportMetadata("ControllerName", "Lobby")]
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class LobbyController : Controller
     {

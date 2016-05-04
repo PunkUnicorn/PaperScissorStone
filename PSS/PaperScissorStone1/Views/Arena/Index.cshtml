@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "Arena";
+}
+@Model PaperScissorStone1.Models.ArenaViewModel
+<h2>Arena</h2>
+<button id="start" class="btn animated rubberBand">Start</button>
+<h4 id="countDown"></h4>
+@section scripts {
+<script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+<script src="~/signalr/hubs"></script>
+
+<script>
+
+    $(document).ready(function () {
+        arenaUpdate = $.connection.arenaHub;
+
+        arenaUpdate.client.countDown = function (countIn) {
+            $('#countDown').text(countIn.toString());
+        };
+
+        arenaUpdate.client.pleaseSubmitThrow = function(gameId) {
+            arenaUpdate.server.submitThrow(@Model.MyId, 1);
+        };
+
+        $.connection.hub.start().done(function () {
+            arenaUpdate.server.joined(@Model.GameId, @Model.MyId);
+            // auto remove ourselves from the lobby
+            window.onbeforeunload = function (e) {
+                arenaUpdate.server.leftArena(@Model.GameId, @Model.MyId);
+            };
+
+            $('#start').click(function () {
+                arenaUpdate.server.startRound(@Model.GameId, @Model.MyId);
+            });
+        });
+    });
+
+    function onclickStart(event) {
+
+    }
+
+
+</script>
+}
+

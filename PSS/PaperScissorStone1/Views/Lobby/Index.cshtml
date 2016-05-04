@@ -41,6 +41,7 @@
             <ul id="discussion"></ul>
         </div>
     </div>
+    @Html.ActionLink("Arena", "Index", "Arena", null, new { id = "arenaLink", @class="hidden" })
 </div>
 @section scripts {
     <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
@@ -76,6 +77,17 @@
             };
             lobbyUpdate.client.challengeRejected = function(theirId) {
                 cancelledChallenge(theirId);
+            };
+            lobbyUpdate.client.arenaRedirect = function(gameId, challengeById, acceptedById) {
+                debugger;
+                var link = $('#arenaLink').prop('href');
+                window.location.href = link + '?GameId=' + gameId + '&Id=' + @Model.Id;
+                //$.ajax({
+                //    url: link,
+                //    data: { id: gameId }
+                //}).done(function() {
+                //    alert('Added');
+                //});
             };
             $.connection.hub.start().done(function () {
                 // add ourselves to the lobby
@@ -132,7 +144,7 @@
         function onclickChallenge(theirId) {
             lobbyUpdate.server.inviteChallenge(@Model.Id, '@Model.Name', theirId);
             $('#challengers').append(makeCancelChallengeButton(theirId));
-            $('.challenge_button').prop('disabled', true); 
+            $('.challenge_button').prop('disabled', true);
         }
 
         function cancelledChallenge(theirId) {
@@ -145,6 +157,7 @@
         }
 
         function onclickAcceptChallenge(challengeById) {
+            lobbyUpdate.server.initArena(challengeById, @Model.Id);
             console.log('challenge from ' + challengeById + 'accepted ');
         }
     </script>

@@ -205,12 +205,15 @@
     <Compile Include="App_Start\MefConfig.cs" />
     <Compile Include="App_Start\MefDependencyResolver.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ArenaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LobbyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Hubs\ArenaHub.cs" />
     <Compile Include="Hubs\LobbyHub.cs" />
+    <Compile Include="Models\ArenaViewModel.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\LobbyViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -265,6 +268,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Lobby\Index.cshtml" />
+    <Content Include="Views\Arena\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PaperScissorStoneCore\PaperScissorStoneCore.csproj">

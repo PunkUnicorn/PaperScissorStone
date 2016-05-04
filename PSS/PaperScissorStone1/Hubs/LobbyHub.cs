@@ -7,14 +7,16 @@ namespace PaperScissorStone1
     public class LobbyHub : Hub
     {
         private IPlayerManager DataContext { get; set; }
-        private ILobbyConnectionMap ConnectionMap { get; set; }
+        private ISignalRConnectionMap ConnectionMap { get; set; }
         private ILobbyChallengeMap ChallengeMap { get; set; }
-        
-        public LobbyHub(IPlayerManager dataContext, ILobbyConnectionMap connectionMap, ILobbyChallengeMap challengeMap)
+        private IArenaManager ArenaManager { get; set; }
+
+        public LobbyHub(IPlayerManager dataContext, ISignalRConnectionMap connectionMap, ILobbyChallengeMap challengeMap, IArenaManager arenaManager)
         {
             ChallengeMap = challengeMap;
             ConnectionMap = connectionMap;
             DataContext = dataContext;
+            ArenaManager = arenaManager;
         }
 
         public void AddPlayer(int id, string name)
@@ -88,6 +90,16 @@ namespace PaperScissorStone1
             ChallengeMap.Remove(theirId, myId);
             var connectionId = ConnectionMap.Get(theirId);
             Clients.Client(connectionId).challengeRejected(myId);
+        }
+
+        public void InitArena(int challengerId, int acceptChallengeId)
+        {
+            var challengerConId = ConnectionMap.Get(challengerId);
+            var acceptingConId = ConnectionMap.Get(acceptChallengeId);
+            var all = new[] { challengerConId, acceptingConId };
+
+            IGame newGame = ArenaManager.NewGame(challengerId, acceptChallengeId);
+            Clients.Clients(all).arenaRedirect(newGame.Id, newGame.LeftPlayerId, newGame.RightPlayerId);
         }
     }
 }

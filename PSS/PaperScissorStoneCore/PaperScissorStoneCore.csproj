@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Game\ChallengePair.cs" />
     <Compile Include="Game\GameClasses.cs" />
+    <Compile Include="Game\ArenaManager.cs" />
     <Compile Include="Game\LobbyChallengeMap.cs" />
     <Compile Include="Game\LobbyConnectionMap.cs" />
     <Compile Include="Game\PlayerManager.cs" />

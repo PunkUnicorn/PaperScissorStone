@@ -21,11 +21,24 @@ namespace PaperScissorStoneCore
         public DateTime LastActivityOn { get; internal set; }
     }
 
-    public class Game
+    public interface IGame
+    {
+        int Id { get; }
+        int LeftPlayerId { get; }
+        int RightPlayerId { get; }
+    }
+
+    public class Game : IGame
     {
         public int Id { get; set; }
         public int LeftPlayerId { get; set; }
         public int RightPlayerId { get; set; }
+        public int JoinCount { get; set; }
+        public List<Turn> Turns { get; set; }
+        public int? Winner
+        {
+            get;
+        }
     }
 
     public class Turn

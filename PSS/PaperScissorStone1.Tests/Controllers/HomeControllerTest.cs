@@ -8,7 +8,7 @@ using PaperScissorStone1;
 using PaperScissorStone1.Controllers;
 using Moq;
 using PaperScissorStoneCore;
-using PaperScissorStone1.Models.Home;
+using PaperScissorStone1.Models;
 
 namespace PaperScissorStone1.Tests.Controllers
 {

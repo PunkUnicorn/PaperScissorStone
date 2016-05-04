@@ -43,5 +43,4 @@ namespace PaperScissorStoneCore
         }
         public bool Contains(int id) { return Max == id || Min == id; }
     }
-
 }
