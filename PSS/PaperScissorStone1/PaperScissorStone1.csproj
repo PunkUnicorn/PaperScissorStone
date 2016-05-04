@@ -269,6 +269,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Lobby\Index.cshtml" />
     <Content Include="Views\Arena\Index.cshtml" />
+    <Content Include="Views\Arena\Stats.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PaperScissorStoneCore\PaperScissorStoneCore.csproj">

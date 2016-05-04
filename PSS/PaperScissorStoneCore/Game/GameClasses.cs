@@ -31,6 +31,9 @@ namespace PaperScissorStoneCore
 
         void AddThrow(int id, string throwType);
         bool IsTurnFaulted { get; }
+        int TurnCount { get; }
+        ThrowType MostOccuringMove { get; }
+        IDictionary<int /*playerId*/, ThrowType> Throws { get; }
 
         void NextRound();
     }
@@ -54,6 +57,15 @@ namespace PaperScissorStoneCore
         /// Guarded with Lock
         /// </summary>
         private List<Turn> Turns { get; set; }
+        public int TurnCount
+        {
+            get
+            {
+                lock (Lock)
+                    return Turns.Count;
+            }
+        }
+
         public int ThrowCount
         {
             get
@@ -124,6 +136,39 @@ namespace PaperScissorStoneCore
                         return null;
 
                     return CurrentTurn.WinnerId;
+                }
+            }
+        }
+
+        public ThrowType MostOccuringMove
+        {
+            get
+            {
+                lock (Lock)
+                {
+                    ThrowType mostOccurring = Turns.
+                        SelectMany(sm => sm.Throws).
+                        Where(w => w.Value != ThrowType.Invalid).
+                        GroupBy(g => g.Value).
+                        OrderByDescending(o => o.Count()).
+                        Select(s => s.Key).
+                        FirstOrDefault();
+
+                    return mostOccurring;
+                }
+            }
+        }
+
+        public IDictionary<int, ThrowType> Throws
+        {
+            get
+            {
+                lock (Lock)
+                {
+                    if (CurrentTurn == null)
+                        return new Dictionary<int, ThrowType>();
+
+                    return CurrentTurn.Throws.ToDictionary(k => k.Key, v => v.Value);
                 }
             }
         }

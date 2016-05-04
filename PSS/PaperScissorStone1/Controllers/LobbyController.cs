@@ -14,6 +14,9 @@ namespace PaperScissorStone1.Controllers
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class LobbyController : Controller
     {
+        [Import]
+        public IArenaManager Arena { get; set; }
+
         private IPlayerManager Context { get; set; }
 
         [ImportingConstructor]
@@ -32,7 +35,22 @@ namespace PaperScissorStone1.Controllers
             if (!loggedOn)
                 return RedirectToAction("Index", "Home", name);
 
-            return View(new LobbyViewModel { Id = id.Value, Name = name, Players = Context.LoggedOn });
+            var model = new LobbyViewModel
+            {
+                Id = id.Value,
+                Name = name
+            };
+
+            var lobbyPlayersIds = Context.LoggedOn.
+                    Select(s => s.Id).
+                    Distinct().
+                    Except(Arena.Players);
+
+            model.Players = Context.LoggedOn.
+                    Where(w => lobbyPlayersIds.Contains(w.Id)).
+                    ToList();
+
+            return View(model);
         }
     }
 }

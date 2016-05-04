@@ -39,12 +39,25 @@ namespace PaperScissorStone1.Controllers
             if (game.LeftPlayerId != id && game.RightPlayerId != id)
                 return RedirectToAction("Index", "Home");
 
-            //// prevent an auto logoff caused by leaving the lobby
-            ///Context.UpdateActivity(id);
-
             var model = new ArenaViewModel() { GameId = gameId, MyId = id, TheirId = GetOther(id, game) };
             
             return View(model);
+        }
+
+        public ActionResult Stats(int gameId, int id)
+        {
+            var game = ArenaManager.Get(gameId);
+            if (game == null)
+                return RedirectToAction("Index", "Home");
+
+            var model = new ArenaViewModel() { GameId = gameId, MyId = id, TheirId = GetOther(id, game) };
+
+            // get statistics
+            model.TurnCount = game.TurnCount;
+            model.MostUsedMove = game.MostOccuringMove.ToString();
+
+            var throws = game.Throws;
+            return PartialView("Stats", model);
         }
     }
 }

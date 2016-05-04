@@ -22,11 +22,24 @@
 <div>
     <button id="quit" class="btn" onclick="onclickQuit()">Quit</button>
 </div>
+<div id="stats">
+@Html.Partial("Stats");
+</div>
+@Html.ActionLink("Lobby", "Index", "Lobby", null, new { id = "lobbyLink", @class = "hidden" })
 @section scripts {
 <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
 <script src="~/signalr/hubs"></script>
 
 <script>
+    @*<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#ddlCategory").change(function () {
+            var categoryId =  $("#ddlCategory").val();
+               $("#dvCategoryResults").load('@(Url.Action("Stats","Arena",null, Request.Url.Scheme))?GameId=' + @Model.GameId + '&Id=' + @Model.MyId);
+        });
+    });
+//</script>*@
 
     $(document).ready(function () {
         arenaUpdate = $.connection.arenaHub;
@@ -48,13 +61,13 @@
             arenaUpdate.server.submitThrow(@Model.GameId, @Model.MyId, selectedThrow);
         };
         arenaUpdate.client.roundResults = function(winnerId, displayResult) {
+            updateStats();
             $('#countdown').text(displayResult);
             $('#start').text('Next');
             newRound();
         };
         $.connection.hub.start().done(function () {
             arenaUpdate.server.joined(@Model.GameId, @Model.MyId);
-            // auto remove ourselves from the lobby
             window.onbeforeunload = function (e) {
                 arenaUpdate.server.leftArena(@Model.GameId, @Model.MyId);
             };
@@ -66,6 +79,11 @@
             newRound();
         });
     });
+
+    function updateStats() {
+        //https://cmatskas.com/update-an-mvc-partial-view-with-ajax/
+        $("#stats").load('@(Url.Action("Stats","Arena",null, Request.Url.Scheme))?GameId=' + @Model.GameId + '&Id=' + @Model.MyId);
+    }
 
     function countdownStarted() {
         $('#countdown').text('');
@@ -83,6 +101,11 @@
     function onclickThrow(buttonId) {
         $('.throw_option').removeClass('selected_throw');
         $('#' + buttonId).addClass('selected_throw');
+    }
+
+    function onclickQuit() {
+        var link = $('#lobbyLink').prop('href');
+        window.location.href = link + '?Id=' + @Model.MyId;
     }
 </script>
 }

@@ -45,14 +45,12 @@
         $('#registerShowPanel').hide();
         $('#loginTitle').hide();
 
-        setUiHintLogin(false);
-        setUiHintRegister(false);
+        setUiHintLogin(validateLogin());
+        setUiHintRegister(validateRegister());
 
         @if (Model.Errors != null && Model.Errors.Any()) {
             @:$('#error').text('@string.Join("<br />", Model.Errors)');
         }
-        //$('#loginBtn').prop('disabled', true);
-        //$('#registerBtn').prop('disabled', true);
     });
 
     function toggler(divId) {
@@ -111,6 +109,5 @@
         var isValid = validateRegister();
         setUiHintRegister(isValid);
     }
-
 </script>
 }

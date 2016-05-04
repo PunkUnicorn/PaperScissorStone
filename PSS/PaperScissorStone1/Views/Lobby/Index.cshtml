@@ -79,15 +79,8 @@
                 cancelledChallenge(theirId);
             };
             lobbyUpdate.client.arenaRedirect = function(gameId, challengeById, acceptedById) {
-                debugger;
                 var link = $('#arenaLink').prop('href');
                 window.location.href = link + '?GameId=' + gameId + '&Id=' + @Model.Id;
-                //$.ajax({
-                //    url: link,
-                //    data: { id: gameId }
-                //}).done(function() {
-                //    alert('Added');
-                //});
             };
             $.connection.hub.start().done(function () {
                 // add ourselves to the lobby

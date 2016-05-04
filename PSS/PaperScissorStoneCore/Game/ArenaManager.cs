@@ -8,6 +8,8 @@ namespace PaperScissorStone1
 {
     public interface IArenaManager
     {
+        IEnumerable<int> Players { get; }
+
         IGame NewGame(int challenger, int accepter);
         IGame Get(int gameId);
         void NextRound(int gameId);
@@ -18,6 +20,18 @@ namespace PaperScissorStone1
     {
         private readonly object Lock = new object();
         private List<IGame> Games { get; set; }
+
+        public IEnumerable<int> Players
+        {
+            get
+            {
+                lock (Lock)
+                    return Games.
+                        SelectMany(sm => new[] { sm.LeftPlayerId, sm.RightPlayerId }).
+                        Distinct().
+                        ToList();
+            }
+        }
 
         public ArenaManager()
         {

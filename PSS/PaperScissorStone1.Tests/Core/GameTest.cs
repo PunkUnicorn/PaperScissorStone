@@ -194,5 +194,49 @@ namespace PaperScissorStone1.Tests.Core
             //bool noWinner = (game.Winner.Value == 0);
             Assert.IsTrue(game.IsTurnFaulted, "expecting a fault");
         }
+
+        [TestMethod]
+        public void Game_TurnCount()
+        {
+            // Arrange
+            IGame game = new Game();
+
+            // Act
+            game.AddThrow(2, "Scissor");
+            game.NextRound();
+            game.AddThrow(1, "Scissor");
+            game.AddThrow(2, "Scissor");
+            game.NextRound();
+            game.AddThrow(1, "Scissor");
+
+            // Assert
+            Assert.IsTrue(game.TurnCount == 3, "expecting a different turn count");
+        }
+
+        [TestMethod]
+        public void Game_MostUsedMove()
+        {
+            // Arrange
+            IGame game = new Game();
+
+            // Act
+            game.AddThrow(2, "Scissor");
+            game.NextRound();
+            game.AddThrow(1, "Scissor");
+            game.AddThrow(2, "Scissor");
+            game.NextRound();
+            game.AddThrow(1, "Scissor");
+            game.NextRound();
+            game.AddThrow(2, "Stone");
+            game.NextRound();
+            game.AddThrow(1, "Stone");
+            game.AddThrow(2, "Paper");
+            game.NextRound();
+            game.AddThrow(1, "Paper");
+
+
+            // Assert
+            Assert.IsTrue(game.MostOccuringMove == ThrowType.Scissor, "expecting Scissor");
+        }
     }
 }

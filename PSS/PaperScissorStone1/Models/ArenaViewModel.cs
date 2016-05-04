@@ -11,5 +11,7 @@ namespace PaperScissorStone1.Models
         public int MyId { get; set; }
         public int TheirId { get; set; }
         public int TurnId { get; set; }
+        public int TurnCount { get; set; }
+        public string MostUsedMove { get; set; }
     }
 }
